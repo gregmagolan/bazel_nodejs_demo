@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:tsc.bzl", "tsc")
+load("//tools:jest_test.bzl", "jest_test")
+
+SRCS = glob(["**/*.ts"], exclude = ["**/*.test.ts", "**/*.d.ts"])
+TESTS = glob(["**/*.test.ts"], exclude = ["**/*.d.ts"])
+DECLARATIONS = glob(["**/*.d.ts"])
+
+tsc(
+    name = "bar_lib",
+    srcs = SRCS,
+    ts_config = "//:tsconfig.json",
+    deps = DECLARATIONS + [
+        "@npm//@types/jasmine",
+    ],
+)
+
+tsc(
+    name = "bar_tests",
+    srcs = TESTS,
+    ts_config = "//:tsconfig.json",
+    deps = SRCS + DECLARATIONS + [
+        "@npm//@types/jasmine",
+    ],
+)
+
+jest_test(
+    name = "test",
+    tests = [":bar_tests"],
+    jest_config = "//:jest.config.js",
+    deps = [":bar_lib"],
+)

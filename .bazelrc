@@ -1,0 +1,5 @@
+build --disk_cache=~/.cache/bazel-disk-cache
+build --announce_rc
+build --nolegacy_external_runfiles
+
+test --test_output=errors

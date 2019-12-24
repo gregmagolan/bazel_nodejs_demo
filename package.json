@@ -1,0 +1,10 @@
+{
+  "name": "@bazel_nodejs_demo/root",
+  "private": true,
+  "devDependencies": {
+    "@types/jasmine": "3.5.0",
+    "jasmine": "3.5.0",
+    "jest": "24.9.0",
+    "typescript": "3.7.4"
+  }
+}

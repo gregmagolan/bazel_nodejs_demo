@@ -1,0 +1,13 @@
+diff --git a/internal/node/bazel_require_script.js b/internal/node/bazel_require_script.js
+index 3d062b29..1bf613e3 100644
+--- a/internal/node/bazel_require_script.js
++++ b/internal/node/bazel_require_script.js
+@@ -501,7 +501,7 @@ exports.escapeFunction = (root) => {
+         return false;
+     }
+     function isOutPath(str) {
+-        return !root || (!str.startsWith(root + path.sep) && str !== root);
++        return !root || (!str.startsWith(root + path.sep) && str !== root) || str.startsWith(root + path.sep + 'npm' + path.sep);
+     }
+     return { isEscape, isOutPath };
+ };
