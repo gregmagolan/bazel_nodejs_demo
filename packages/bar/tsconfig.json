@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDirs": [
+      "../../packages/bar",
+      "../../bazel-out/darwin-fastbuild/bin/packages/bar",
+    ]
+  },
+}

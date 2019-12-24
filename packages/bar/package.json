@@ -1,0 +1,5 @@
+{
+  "name": "@bazel_nodejs_demo/bar",
+  "private": true,
+  "main": "main"
+}

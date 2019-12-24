@@ -1,9 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("//tools:tsc.bzl", "tsc")
 load("//tools:jest_test.bzl", "jest_test")
-load("//tools:node_module.bzl", "node_module")
 
 filegroup(
     name = "decl",
@@ -16,6 +14,7 @@ tsc(
     ts_config = "//:tsconfig.json",
     deps = [
         "@npm//@types/jasmine",
+        "//packages/bar:mod",
         ":decl",
     ],
 )
@@ -26,6 +25,7 @@ tsc(
     ts_config = ":tsconfig.json",
     deps = [
         "@npm//@types/jasmine",
+        "//packages/bar:mod",
         "//:tsconfig.json",
         ":decl",
         ":lib",
@@ -36,22 +36,8 @@ jest_test(
     name = "test",
     tests = [":tests"],
     jest_config = "//:jest.config.js",
-    deps = [":lib"],
-)
-
-copy_to_bin(
-  name = "to_bin",
-  srcs = [
-    "package.json",
-    ":decl",
-  ]
-)
-
-node_module(
-  name = "mod",
-  srcs = [
-    ":to_bin",
-    ":lib",
-  ],
-  module_name = "@bazel_nodejs_demo/bar",
+    deps = [
+        "//packages/bar:mod",
+        ":lib",
+    ],
 )
