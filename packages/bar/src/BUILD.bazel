@@ -1,0 +1,20 @@
+package(default_visibility = ["//packages/bar:__pkg__"])
+
+load("//tools:tsc.bzl", "tsc")
+load("//tools:jest_test.bzl", "jest_test")
+
+filegroup(
+    name = "decl",
+    srcs = glob(["**/*.d.ts"]),
+)
+
+tsc(
+    name = "lib",
+    srcs = glob(["**/*.ts"], exclude = ["**/*.d.ts"]),
+    ts_config = "//packages/bar:tsconfig.json",
+    deps = [
+        "//:tsconfig.json",
+        "@npm//@types/jasmine",
+        ":decl",
+    ],
+)

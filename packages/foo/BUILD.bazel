@@ -11,8 +11,9 @@ filegroup(
 tsc(
     name = "lib",
     srcs = glob(["*.ts", "src/**/*.ts"], exclude = ["**/*.d.ts"]),
-    ts_config = "//:tsconfig.json",
+    ts_config = ":tsconfig.json",
     deps = [
+        "//:tsconfig.json",
         "@npm//@types/jasmine",
         "//packages/bar:mod",
         ":decl",
