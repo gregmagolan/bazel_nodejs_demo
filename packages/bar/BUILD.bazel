@@ -10,7 +10,7 @@ exports_files([
 filegroup(
     name = "decl",
     srcs = glob(["src/**/*.d.ts"]) + [
-      "//packages/bar/src:decl",
+        "//packages/bar/src:decl",
     ],
 )
 
@@ -18,9 +18,10 @@ tsc(
     name = "lib",
     srcs = glob(["*.ts"], exclude = ["**/*.d.ts"]),
     ts_config = ":tsconfig.json",
-    deps = [
+    data = [
         "//:tsconfig.json",
-        "@npm//@types/jasmine",
+    ],
+    deps = [
         "//packages/bar/src:lib",
         ":decl",
     ],
@@ -30,11 +31,11 @@ tsc(
     name = "tests",
     srcs = glob(["test/**/*.test.ts"], exclude = ["**/*.d.ts"]),
     ts_config = ":tsconfig.json",
-    deps = [
+    data = [
         "@npm//@types/jasmine",
         "//:tsconfig.json",
-        "//packages/bar/src:lib",
-        ":decl",
+    ],
+    deps = [
         ":lib",
     ],
 )
@@ -43,26 +44,24 @@ jest_test(
     name = "test",
     tests = [":tests"],
     jest_config = "//:jest.config.js",
-    deps = [
-      ":lib",
-      "//packages/bar/src:lib",
+    data = [
+        ":lib",
     ],
 )
 
 copy_to_bin(
   name = "src_to_bin",
   srcs = [
-    "package.json",
-    ":decl",
+      "package.json",
+      ":decl",
   ]
 )
 
 node_module(
   name = "mod",
   srcs = [
-    ":src_to_bin",
-    ":lib",
-    "//packages/bar/src:lib",
+      ":src_to_bin",
+      ":lib",
   ],
   module_name = "@bazel_nodejs_demo/bar",
   visibility = ["//visibility:public"],

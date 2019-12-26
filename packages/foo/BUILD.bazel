@@ -12,9 +12,10 @@ tsc(
     name = "lib",
     srcs = glob(["*.ts", "src/**/*.ts"], exclude = ["**/*.d.ts"]),
     ts_config = ":tsconfig.json",
-    deps = [
+    data = [
         "//:tsconfig.json",
-        "@npm//@types/jasmine",
+    ],
+    deps = [
         "//packages/bar:mod",
         ":decl",
     ],
@@ -24,11 +25,11 @@ tsc(
     name = "tests",
     srcs = glob(["test/**/*.test.ts"], exclude = ["**/*.d.ts"]),
     ts_config = ":tsconfig.json",
-    deps = [
+    data = [
         "@npm//@types/jasmine",
-        "//packages/bar:mod",
         "//:tsconfig.json",
-        ":decl",
+    ],
+    deps = [
         ":lib",
     ],
 )
@@ -37,8 +38,7 @@ jest_test(
     name = "test",
     tests = [":tests"],
     jest_config = "//:jest.config.js",
-    deps = [
-        "//packages/bar:mod",
+    data = [
         ":lib",
     ],
 )
