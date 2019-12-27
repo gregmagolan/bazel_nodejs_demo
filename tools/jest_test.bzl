@@ -11,10 +11,11 @@ def jest_test(name, tests = [], jest_config = None, data = [], **kwargs):
     if jest_config:
         args.extend(["--config", "$(location %s)" % jest_config])
 
-    for test in tests:
+    js_tests = [f[:-3] + ".js" for f in tests]
+    for test in js_tests:
         args.extend(["--runTestsByPath", "$(locations %s)" % test])
 
-    data = data[:] + tests
+    data = data[:] + js_tests
     if jest_config:
         data += [jest_config]
 

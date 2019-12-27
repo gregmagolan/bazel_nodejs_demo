@@ -23,7 +23,7 @@ tsc(
 
 tsc(
     name = "tests",
-    srcs = glob(["test/**/*.test.ts"], exclude = ["**/*.d.ts"]),
+    srcs = glob(["test/**/*.test.ts"]),
     ts_config = ":tsconfig.json",
     data = [
         "@npm//@types/jasmine",
@@ -36,9 +36,9 @@ tsc(
 
 jest_test(
     name = "test",
-    tests = [":tests"],
+    tests = glob(["test/**/*.test.ts"]),
     jest_config = "//:jest.config.js",
     data = [
-        ":lib",
+        ":tests",
     ],
 )
