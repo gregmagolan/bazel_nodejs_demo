@@ -7,6 +7,10 @@ def tsc(name, srcs = [], ts_config = None, data = [], deps = [], **kwargs):
     args = [
         "-p",
         "$(location %s)" % ts_config,
+        # TODO: make this work for Windows
+        # TODO: get the actualy workspace name in there since `native.repository_name()` just resolves to `@`
+        "--tsBuildInfoFile",
+        "/tmp/.bazel_tsc_cache/%s/%s/%s.tsbuildinfo" % (native.repository_name(), native.package_name(), name),
         "--rootDir",
         native.package_name(),
         "--outDir",

@@ -3,7 +3,8 @@
     "module": "commonjs",
     "target": "es2017",
     "inlineSourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "incremental": true
   },
   "exclude": [
     "node_modules",
