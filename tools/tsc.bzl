@@ -5,10 +5,8 @@ def tsc(name, srcs = [], ts_config = None, data = [], deps = [], **kwargs):
     outs = [f[:-3] + ".js" for f in srcs] + [f[:-3] + ".d.ts" for f in srcs]
 
     args = [
-        "-p",
-        "$(location %s)" % ts_config,
         # TODO: make this work for Windows
-        # TODO: get the actualy workspace name in there since `native.repository_name()` just resolves to `@`
+        # TODO: get the actual workspace name in there since `native.repository_name()` just resolves to `@`
         "--tsBuildInfoFile",
         "/tmp/.bazel_tsc_cache/%s/%s/%s.tsbuildinfo" % (native.repository_name(), native.package_name(), name),
         "--rootDir",
@@ -20,7 +18,13 @@ def tsc(name, srcs = [], ts_config = None, data = [], deps = [], **kwargs):
 
     data = data[:] + srcs
     if ts_config:
+        args += ["-p", "$(location %s)" % ts_config]
         data += [ts_config]
+    else:
+        for src in srcs:
+            args += ["$(location %s)" % src]
+
+    args += kwargs.pop("args", [])
 
     _tsc(
         name = name,
