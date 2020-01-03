@@ -33,7 +33,7 @@ index 3d062b29..1dca5412 100644
      return { isEscape, isOutPath };
  };
 diff --git a/internal/node/node.bzl b/internal/node/node.bzl
-index 2c0bfefd..4ccb6885 100644
+index dde8b81c..91f776e7 100644
 --- a/internal/node/node.bzl
 +++ b/internal/node/node.bzl
 @@ -25,7 +25,7 @@ load("//internal/common:expand_into_runfiles.bzl", "expand_location_into_runfile
@@ -63,7 +63,7 @@ index 2c0bfefd..4ccb6885 100644
      if len(ctx.attr.entry_point.files.to_list()) != 1:
          fail("labels in entry_point must contain exactly one file")
  
-@@ -165,11 +163,13 @@ def _nodejs_binary_impl(ctx):
+@@ -165,10 +163,16 @@ def _nodejs_binary_impl(ctx):
              sources_depsets.append(d.files)
      sources = depset(transitive = sources_depsets)
  
@@ -72,14 +72,16 @@ index 2c0bfefd..4ccb6885 100644
 +
 +    _write_loader_script(ctx, node_modules_root)
  
-     script_path = _to_manifest_path(ctx, ctx.outputs.loader)
- 
--    env_vars = "export BAZEL_TARGET=%s\n" % ctx.label
-+    env_vars = "export NODE_MODULES_ROOT=%s\n" % node_modules_root
+     env_vars = "export BAZEL_TARGET=%s\n" % ctx.label
+     env_vars += "export BAZEL_WORKSPACE=%s\n" % ctx.workspace_name
++    env_vars += """if [[ -z "${NODE_MODULES_ROOT:-}" ]]; then
++  export NODE_MODULES_ROOT=%s
++fi
++""" % node_modules_root
      for k in ctx.attr.configuration_env_vars + ctx.attr.default_env_vars:
          if k in ctx.var.keys():
              env_vars += "export %s=\"%s\"\n" % (k, ctx.var[k])
-@@ -277,7 +277,7 @@ _NODEJS_EXECUTABLE_ATTRS = {
+@@ -271,7 +275,7 @@ _NODEJS_EXECUTABLE_ATTRS = {
      "data": attr.label_list(
          doc = """Runtime dependencies which may be loaded during execution.""",
          allow_files = True,
@@ -162,3 +164,49 @@ index c2e3e10a..9aeb62e1 100644
          outs = outs,
          args = args,
          output_dir = output_dir,
+diff --git a/internal/providers/node_runtime_deps_info.bzl b/internal/providers/node_runtime_deps_info.bzl
+index d9cd60a5..3788e174 100644
+--- a/internal/providers/node_runtime_deps_info.bzl
++++ b/internal/providers/node_runtime_deps_info.bzl
+@@ -15,6 +15,7 @@
+ """Custom provider that mimics the Runfiles, but doesn't incur the expense of creating the runfiles symlink tree"""
+ 
+ load("//internal/linker:link_node_modules.bzl", "add_arg", "write_node_modules_manifest")
++load("//internal/providers:npm_package_info.bzl", "NpmPackageInfo")
+ 
+ NodeRuntimeDepsInfo = provider(
+     doc = """Stores runtime dependencies of a nodejs_binary or nodejs_test
+@@ -38,7 +39,24 @@ do the same.
+     },
+ )
+ 
+-def run_node(ctx, inputs, arguments, executable, **kwargs):
++def _compute_node_modules_root(ctx):
++    """Computes the node_modules root (if any) from data & deps targets."""
++    node_modules_root = ""
++    deps = []
++    if hasattr(ctx.attr, "data"):
++        deps += ctx.attr.data
++    if hasattr(ctx.attr, "deps"):
++        deps += ctx.attr.deps
++    for d in deps:
++        if NpmPackageInfo in d:
++            possible_root = "/".join([d[NpmPackageInfo].workspace, "node_modules"])
++            if not node_modules_root:
++                node_modules_root = possible_root
++            elif node_modules_root != possible_root:
++                fail("All npm dependencies need to come from a single workspace. Found '%s' and '%s'." % (node_modules_root, possible_root))
++    return node_modules_root
++
++def run_node(ctx, inputs, arguments, executable, env = {}, **kwargs):
+     """Helper to replace ctx.actions.run
+     This calls node programs with a node_modules directory in place"""
+     if (type(executable) != "string"):
+@@ -65,6 +83,7 @@ def run_node(ctx, inputs, arguments, executable, **kwargs):
+ 
+     # Forward the COMPILATION_MODE to node process as an environment variable
+     env = kwargs.pop("env", {})
++    env["NODE_MODULES_ROOT"] = _compute_node_modules_root(ctx)
+     if "COMPILATION_MODE" not in env.keys():
+         env["COMPILATION_MODE"] = ctx.var["COMPILATION_MODE"]
+ 
