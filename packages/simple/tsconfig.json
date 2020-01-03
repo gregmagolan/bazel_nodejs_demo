@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "es2015",
+        "declaration": true,
+        "sourceMap": true,
+        "rootDirs": [
+            "../../packages/simple",
+            "../../bazel-out/darwin-fastbuild/bin/packages/simple",
+        ]
+    },
+    "exclude": [
+        "bazel-out",
+        "external",
+        "node_modules",
+    ]
+}

@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs_labs//labs:tsc.bzl", "tsc")
+
+tsc(
+  name = "main",
+  srcs = ["main.ts"],
+  deps = [
+    "@npm//typescript",
+  ],
+  tsconfig = ":tsconfig.json",
+  sourcemaps = True,
+  declarations = True,
+)
+
+tsc(
+  name = "index",
+  srcs = ["index.ts"],
+  deps = [
+    "@npm//typescript",
+    "@npm//@types/node",
+    ":main",
+  ],
+  tsconfig = ":tsconfig.json",
+  sourcemaps = True,
+  declarations = True,
+)
