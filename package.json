@@ -2,7 +2,7 @@
   "name": "@bazel_nodejs_demo/root",
   "private": true,
   "devDependencies": {
-    "@types/jasmine": "3.5.0",
+    "@types/jest": "24.9.0",
     "@types/node": "13.1.1",
     "jasmine": "3.5.0",
     "jest": "24.9.0",

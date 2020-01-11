@@ -32,7 +32,7 @@ tsc(
     srcs = glob(["test/**/*.test.ts"]),
     ts_config = ":tsconfig.json",
     data = [
-        "@npm//@types/jasmine",
+        "@npm//@types/jest",
         "@npm//@types/node",
         "//:tsconfig.json",
     ],

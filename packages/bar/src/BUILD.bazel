@@ -14,7 +14,7 @@ tsc(
     ts_config = "//packages/bar:tsconfig.json",
     deps = [
         "//:tsconfig.json",
-        "@npm//@types/jasmine",
+        "@npm//@types/jest",
         ":decl",
     ],
 )
